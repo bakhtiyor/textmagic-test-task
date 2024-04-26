@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  nginx:
+    build: docker/nginx
+    ports:
+      - "80:80"
+    links:
+      - php-fpm
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/nginx.conf/:/etc/nginx/conf.d/nginx.conf
+      - ./logs:/var/log
+    working_dir:
+        /var/www
+
+  php-fpm:
+    build: docker/php-fpm
+    links:
+      - db
+    volumes:
+      - ./:/var/www
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: linux1
+      POSTGRES_DB: testdb
+      POSTGRES_ROOT_PASSWORD: linux1
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data:
+        driver: local
