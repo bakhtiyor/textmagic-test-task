@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -37,6 +39,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private string $password;
+
+    /**
+     * @var Collection<int, UserQuiz>
+     */
+    #[ORM\OneToMany(targetEntity: UserQuiz::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $quizzes;
+
+    public function __construct()
+    {
+        $this->quizzes = new ArrayCollection();
+    }
 
     public function getId(): Uuid
     {
@@ -111,5 +124,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, UserQuiz>
+     */
+    public function getQuizzes(): Collection
+    {
+        return $this->quizzes;
+    }
+
+    public function addUserQuiz(UserQuiz $userQuiz): static
+    {
+        if (!$this->quizzes->contains($userQuiz)) {
+            $this->quizzes->add($userQuiz);
+            $userQuiz->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserQuiz(UserQuiz $userQuiz): static
+    {
+        if ($this->quizzes->removeElement($userQuiz)) {
+            // set the owning side to null (unless already changed)
+            if ($userQuiz->getUser() === $this) {
+                $userQuiz->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
