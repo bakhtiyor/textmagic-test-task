@@ -1,25 +1,33 @@
 version: '3.7'
 
 services:
+  php-fpm:
+    build:
+      context: .
+      dockerfile: docker/php-fpm/Dockerfile
+      target: dev
+    links:
+      - db
+    volumes: &volumes
+      - ./:/var/www
+
+  builder:
+    build:
+      context: .
+      dockerfile: docker/php-fpm/Dockerfile
+      target: main
+    working_dir: /var/www
+    command: composer install
+    restart: 'no'
+    volumes: *volumes
+
   nginx:
     build: docker/nginx
     ports:
       - "80:80"
     links:
       - php-fpm
-    volumes:
-      - ./:/var/www
-      - ./docker/nginx/nginx.conf/:/etc/nginx/conf.d/nginx.conf
-      - ./logs:/var/log
-    working_dir:
-        /var/www
-
-  php-fpm:
-    build: docker/php-fpm
-    links:
-      - db
-    volumes:
-      - ./:/var/www
+    volumes: *volumes
 
   db:
     image: postgres:latest
