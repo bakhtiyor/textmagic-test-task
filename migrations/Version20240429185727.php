@@ -15,8 +15,8 @@ final class Version20240429185727 extends AbstractMigration
             CREATE TABLE quiz (
                 id UUID NOT NULL, 
                 title VARCHAR(255) NOT NULL, 
-                created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, 
-                updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+                created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, 
+                updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, 
                 PRIMARY KEY(id)
           )'
         );
