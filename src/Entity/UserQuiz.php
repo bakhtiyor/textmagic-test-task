@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\UserQuizStatus;
 use App\Repository\UserQuizRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -31,6 +33,17 @@ class UserQuiz
 
     #[ORM\Column(length: 20)]
     private UserQuizStatus $status;
+
+    /**
+     * @var Collection<int, UserQuizAnswer>
+     */
+    #[ORM\OneToMany(targetEntity: UserQuizAnswer::class, mappedBy: 'userQuiz', orphanRemoval: true)]
+    private Collection $answers;
+
+    public function __construct()
+    {
+        $this->answers = new ArrayCollection();
+    }
 
     public function getId(): Uuid
     {
@@ -69,6 +82,36 @@ class UserQuiz
     public function setStatus(UserQuizStatus $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserQuizAnswer>
+     */
+    public function getAnswers(): Collection
+    {
+        return $this->answers;
+    }
+
+    public function addAnswer(UserQuizAnswer $answer): static
+    {
+        if (!$this->answers->contains($answer)) {
+            $this->answers->add($answer);
+            $answer->setUserQuiz($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnswer(UserQuizAnswer $answer): static
+    {
+        if ($this->answers->removeElement($answer)) {
+            // set the owning side to null (unless already changed)
+            if ($answer->getUserQuiz() === $this) {
+                $answer->setUserQuiz(null);
+            }
+        }
 
         return $this;
     }
