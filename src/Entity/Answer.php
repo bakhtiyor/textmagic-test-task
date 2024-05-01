@@ -27,6 +27,9 @@ class Answer
     #[ORM\Column(length: 255)]
     private string $title;
 
+    #[ORM\Column]
+    private bool $correct;
+
     public function getId(): Uuid
     {
         return $this->id;
@@ -52,6 +55,18 @@ class Answer
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function isCorrect(): bool
+    {
+        return $this->correct;
+    }
+
+    public function setCorrect(bool $correct): static
+    {
+        $this->correct = $correct;
 
         return $this;
     }
