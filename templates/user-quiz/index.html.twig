@@ -28,11 +28,23 @@
         </thead>
         <tbody>
         {% for userQuiz in userQuizzes %}
+            {% set userQuizStatus = userQuiz.status.value %}
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>{{ userQuiz.id }}</td>
                 <td>{{ userQuiz.quiz.title }}</td>
-                <td>{{ userQuiz.status.value }}</td>
+                <td>
+                    {% if userQuizStatus == 'queued' %}
+                        <i class="bi bi-hourglass text-warning"></i>
+                        <span class="text-warning">{{ userQuizStatus | capitalize }}</span>
+                    {% elseif userQuizStatus == 'started' %}
+                        <i class="bi bi-play-fill text-primary"></i>
+                        <span class="text-primary">{{ userQuizStatus | capitalize }}</span>
+                    {% elseif userQuizStatus == 'finished' %}
+                        <i class="bi bi-check-lg text-success"></i>
+                        <span class="text-success">{{ userQuizStatus | capitalize }}</span>
+                    {% endif %}
+                </td>
                 <td>{{ userQuiz.createdAt | date('d.m.Y H:i:s') }}</td>
                 <td>{{ userQuiz.updatedAt | date('d.m.Y H:i:s') }}</td>
             </tr>
