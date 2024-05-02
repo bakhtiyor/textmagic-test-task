@@ -63,8 +63,7 @@ class UserQuizController extends AbstractController
         Request $request,
         SaveUserAnswersService $saveUserAnswersService
     ): Response {
-        $answers = $request->request->all('answers');
-        $saveUserAnswersService->execute($userQuiz, $answers);
+        $saveUserAnswersService->execute($userQuiz, $request->request->all('answers'));
 
         return $this->redirectToRoute('user-quiz-index');
     }

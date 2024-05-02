@@ -37,7 +37,7 @@ class SaveUserAnswersService
             if ($question === null) {
                 throw new RuntimeException('Question not found');
             }
-            $questionCorrectAnswers = $this->answerRepository->getQuestionCorrectAnswers($question);
+            // save user answers
             foreach ($answerIds as $answerId) {
                 $answer = $this->entityManager->getReference(Answer::class, new Uuid($answerId));
                 if ($answer === null) {
@@ -45,13 +45,17 @@ class SaveUserAnswersService
                 }
                 $this->createUserQuizAnswer($userQuiz, $question, $answer);
             }
+            // check user answers with correct answers from db
+            $questionCorrectAnswers = $this->answerRepository->getQuestionCorrectAnswers($question);
             $userCorrectAnswerCount = 0;
             foreach ($questionCorrectAnswers as $questionCorrectAnswer) {
-                if (in_array($questionCorrectAnswer->getId(), $answerIds, true)) {
+                if (in_array($questionCorrectAnswer->getId()->toRfc4122(), $answerIds, true)) {
                     $userCorrectAnswerCount++;
                 }
             }
 
+            // save user quiz results
+            // if user selected all correct answers and has no any extra answers, then question is correct
             $this->createUserQuizResult(
                 $userQuiz,
                 $question,
