@@ -25,19 +25,27 @@ To deploy the Project, follow these steps:
     docker-compose up -d
     ```
 
-4. Create a copy of .env.local file and create the database schema:
+4. Run the following command to access the PHP container shell:
     ```bash
     docker-compose exec php-fpm bash
+    ```
+   
+5. Create a copy of .env.local file
+   ```bash
     cp .env .env.local
+    ```
+
+6. Create a database schema
+   ```bash
     php bin/console doctrine:schema:create
     ```
    
-5. Run following data fixture in order to fill up the tables with some data (Be careful: that after running this command all the data in the database will be lost):
+7. Run following data fixture in order to fill up the tables with some data (Be careful: that after running this command all the data in the database will be lost):
     ```bash
     php bin/console doctrine:fixtures:load --no-interaction
     ```
       
-6. Access the application via: `http://localhost` in your web browser.
+8. Access the application via: `http://localhost` in your web browser.
 
 ## Contact
 
