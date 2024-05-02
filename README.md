@@ -25,29 +25,20 @@ To deploy the Project, follow these steps:
     docker-compose up -d
     ```
 
-4. Create the database schema:
+4. Create a copy of .env.local file and create the database schema:
     ```bash
     docker-compose exec php-fpm bash
-    php bin/console doctrine:schema:create
-    ```   
-
-5. Create a copy of .env.local file:
-    ```bash
     cp .env .env.local
+    php bin/console doctrine:schema:create
     ```
-
-6. Specify the database connection in the .env.local file:
+   
+5. Run following data fixture in order to fill up the tables with some data (Be careful: that after running this command all the data in the database will be lost):
     ```bash
-    DATABASE_URL="postgresql://test_user:linux1@db/postgres?serverVersion=16&charset=utf8"
-    ```
-
-7. Run following data fixture in order to fill up the tables with some data (Note: that after running this command all the data in the database will be lost):
-    ```bash
-    php bin/console doctrine:fixtures:load
+    php bin/console doctrine:fixtures:load --no-interaction
     ```
       
-8. Access the application via: `http://localhost` in your web browser.
+6. Access the application via: `http://localhost` in your web browser.
 
 ## Contact
 
-If you want to contact me you can reach me at [@bakhtiyorbs](https://t.me/bakhtiyorbs).
+You can reach me at [@bakhtiyorbs](https://t.me/bakhtiyorbs) for any further questions.
