@@ -20,12 +20,11 @@ To deploy the Project, follow these steps:
     cd textmagic-test-task
     ```
 
-3. Start the Docker container as a daemon (it would take a bit of time if you're running it for the first time):
+3. Build the Docker container (for the first time only):
     ```bash
-    docker-compose up -d
+    docker-compose up --build
     ```
-
-4. Run the following command to access the PHP container shell:
+4. Open a new terminal and go to the application directory (where you cloned the project) and run the following command to access the PHP container shell:
     ```bash
     docker-compose exec php-fpm bash
     ```
@@ -37,7 +36,7 @@ To deploy the Project, follow these steps:
 
 6. Create a database schema
    ```bash
-    php bin/console doctrine:schema:create
+    php bin/console doctrine:schema:update
     ```
    
 7. Run following data fixture in order to fill up the tables with some data (Be careful: that after running this command all the data in the database will be lost):
@@ -46,6 +45,10 @@ To deploy the Project, follow these steps:
     ```
       
 8. Access the application via: `http://localhost` in your web browser.
+
+9. You will be asked to login. Use the following credentials or register a new user:
+    - Username: `i@bakhtiyor.tj`
+    - Password: `123456`
 
 ## Contact
 
