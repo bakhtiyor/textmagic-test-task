@@ -65,6 +65,12 @@ class UserQuizController extends AbstractController
     ): Response {
         $saveUserAnswersService->execute($userQuiz, $request->request->all('answers'));
 
-        return $this->redirectToRoute('user-quiz-index');
+        return $this->redirectToRoute('user-quiz-result', ['userQuiz' => $userQuiz->getId()]);
+    }
+
+    #[Route('/user-quiz/{userQuiz}/result', name: 'user-quiz-result', methods: ['GET'])]
+    public function getUserQuizResult(UserQuiz $userQuiz): Response
+    {
+        return $this->render('user-quiz/result.html.twig', ['userQuiz' => $userQuiz]);
     }
 }

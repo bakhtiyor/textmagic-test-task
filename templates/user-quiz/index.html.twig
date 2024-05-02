@@ -24,6 +24,7 @@
             <th scope="col">Status</th>
             <th scope="col">Created At</th>
             <th scope="col">Updated At</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
@@ -45,8 +46,15 @@
                         <span class="text-success">{{ userQuizStatus | capitalize }}</span>
                     {% endif %}
                 </td>
-                <td>{{ userQuiz.createdAt | date('d.m.Y H:i:s') }}</td>
-                <td>{{ userQuiz.updatedAt | date('d.m.Y H:i:s') }}</td>
+                <td>{{ userQuiz.createdAt | date('d.m.Y H:i') }}</td>
+                <td>{{ userQuiz.updatedAt | date('d.m.Y H:i') }}</td>
+                <td>
+                    {% if userQuizStatus == 'finished' %}
+                        <a href="{{ path('user-quiz-result', {'userQuiz' : userQuiz.id}) }}" class="btn btn-primary"><i class="bi bi-info-square-fill"></i> Show results</a>
+                    {% else %}
+                        <a href="{{ path('take-quiz', {'quiz' : userQuiz.quiz.id}) }}" class="btn btn-success"><i class="bi bi-play"></i> Continue</a>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>

@@ -35,4 +35,25 @@ class UserQuizRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getUserQuizQuestionsWithAnswersByStatus(UserQuiz $userQuiz, bool $correct): array
+    {
+        $qb = $this->createQueryBuilder('userQuiz')
+            ->innerJoin('userQuiz.results', 'userQuizResult')
+            ->innerJoin('userQuiz.answers', 'userQuizAnswer')
+            ->innerJoin('userQuizResult.question', 'question')
+            ->innerJoin('userQuizAnswer.answer', 'answer')
+            ->select(
+                'question.title as questionTitle',
+                'answer.title as answerTitle',
+                'userQuizResult.correct as correct'
+            )
+            ->andWhere('userQuiz = :userQuiz')
+            ->andWhere('userQuizResult.correct = :correct')
+            ->setParameter('userQuiz', $userQuiz)
+            ->setParameter('correct', $correct)
+            ->getQuery();
+        $sql = $qb->getSQL();
+        return $qb->getResult();
+    }
 }

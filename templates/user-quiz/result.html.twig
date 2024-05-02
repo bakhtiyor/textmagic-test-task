@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Quiz Result{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4">Result of quiz: {{ userQuiz.quiz.title }}</h1>
+        <div class="row">
+            <div class="col-sm-4">
+                {% set correctQuestionsCount = userQuiz.correctQuestions | length %}
+                {% set incorrectQuestionsCount = userQuiz.incorrectQuestions | length %}
+                {% set totalQuizQuestions = userQuiz.quiz.questions | length %}
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>Taken date and time</td>
+                        <td>{{ userQuiz.updatedAt | date('d.m.Y H:i') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-success">Correct questions</td>
+                        <td class="text-success">{{ correctQuestionsCount }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-danger">Incorrect questions</td>
+                        <td class="text-danger">{{ incorrectQuestionsCount }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-warning">Unanswered questions</td>
+                        <td class="text-warning">{{ totalQuizQuestions - correctQuestionsCount - incorrectQuestionsCount }}</td>
+                    </tr>
+                    {% if correctQuestionsCount + incorrectQuestionsCount != 0 %}
+                        <tr>
+                            <td class="text-info">Percent of correct answers</td>
+                            <td class="text-info">{{ ((correctQuestionsCount * 100) / (totalQuizQuestions)) | round(2, 'floor') }}% </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                {% set userQuizQuestions = userQuiz.correctQuestions|merge(userQuiz.incorrectQuestions) %}
+                {% set correctHeaderPrinted = false %}
+                {% set incorrectHeaderPrinted = false %}
+                {% for userQuizQuestion in userQuizQuestions %}
+                    {% if userQuizQuestion.correct == 1 and correctHeaderPrinted == false %}
+                        <h2 class="text-success">Correct Questions</h2>
+                        {% set correctHeaderPrinted = true %}
+                    {% elseif userQuizQuestion.correct == 0 and incorrectHeaderPrinted == false %}
+                        <h2 class="text-danger">Incorrect Questions</h2>
+                        {% set incorrectHeaderPrinted = true %}
+                    {% endif %}
+                    <div class="card mb-4 question">
+                        <div class="card-header">
+                            <h3 class="question-title">{{ userQuizQuestion.question.title }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                {% for answer in userQuizQuestion.question.answers %}
+                                    {# get answer of user for the current question and answer #}
+                                    {% set userAnswerForCurrentQuestionAndAnswer = null %}
+                                    {% for userQuizAnswer in userQuiz.answers %}
+                                        {% if userQuizAnswer.question.id == userQuizQuestion.question.id and userQuizAnswer.answer.id == answer.id %}
+                                            {% set userAnswerForCurrentQuestionAndAnswer = userQuizAnswer.answer %}
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if userAnswerForCurrentQuestionAndAnswer is not null and userAnswerForCurrentQuestionAndAnswer.correct == false %}
+                                        <li class="list-group-item list-group-item-danger"><i class="bi bi-x-square"></i> {{ userAnswerForCurrentQuestionAndAnswer.title }} (Your answer)</li>
+                                    {% elseif answer.correct %}
+                                        <li class="list-group-item list-group-item-success"> <i class="bi bi-check-square"></i> {{ answer.title }} {% if userAnswerForCurrentQuestionAndAnswer is not null %} (Your answer) {% endif %}</li>
+                                    {% else %}
+                                        <li class="list-group-item"><i class="bi bi-square"></i> {{ answer.title }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if userQuiz.unansweredQuestions|length > 0 %}
+                    <h2 class="text-warning">Unanswered Questions</h2>
+                    {% for unansweredQuestion in userQuiz.unansweredQuestions %}
+                        <div class="card mb-4 question">
+                            <div class="card-header">
+                                <h3 class="question-title">{{ unansweredQuestion.title }}</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    {% for answer in unansweredQuestion.answers %}
+                                        <li class="list-group-item"><i class="bi bi-square"></i> {{ answer.title }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <a href="{{ path('user-quiz-index') }}" class="btn btn-primary"><i class="bi bi-arrow-left"></i> Back to main</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

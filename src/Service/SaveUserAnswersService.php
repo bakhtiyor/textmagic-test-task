@@ -26,20 +26,20 @@ class SaveUserAnswersService
     /**
      * @throws ORMException
      */
-    public function execute(UserQuiz $userQuiz, array $answers): void
+    public function execute(UserQuiz $userQuiz, array $userAnswers): void
     {
         if (!in_array($userQuiz->getStatus(), [UserQuizStatus::QUEUED, UserQuizStatus::STARTED], true)) {
             throw new RuntimeException('User quiz is not in progress');
         }
-        $needToFlush = count($answers) > 0;
-        foreach ($answers as $questionId => $answerIds) {
-            $question = $this->entityManager->getReference(Question::class, new Uuid($questionId));
+        $needToFlush = count($userAnswers) > 0;
+        foreach ($userAnswers as $userAnswerQuestionId => $userAnswerIds) {
+            $question = $this->entityManager->getReference(Question::class, new Uuid($userAnswerQuestionId));
             if ($question === null) {
                 throw new RuntimeException('Question not found');
             }
             // save user answers
-            foreach ($answerIds as $answerId) {
-                $answer = $this->entityManager->getReference(Answer::class, new Uuid($answerId));
+            foreach ($userAnswerIds as $userAnswerId) {
+                $answer = $this->entityManager->getReference(Answer::class, new Uuid($userAnswerId));
                 if ($answer === null) {
                     throw new RuntimeException('Answer not found');
                 }
@@ -47,21 +47,20 @@ class SaveUserAnswersService
             }
             // check user answers with correct answers from db
             $questionCorrectAnswers = $this->answerRepository->getQuestionCorrectAnswers($question);
-            $userCorrectAnswerCount = 0;
-            foreach ($questionCorrectAnswers as $questionCorrectAnswer) {
-                if (in_array($questionCorrectAnswer->getId()->toRfc4122(), $answerIds, true)) {
-                    $userCorrectAnswerCount++;
+            $questionCorrectAnswersArray = array_map(static function($questionCorrectAnswer) {
+                return $questionCorrectAnswer->getId()->toRfc4122();
+            }, $questionCorrectAnswers);
+            
+            $isCorrect = true;
+            foreach ($userAnswerIds as $userAnswerId) {
+                if (!in_array($userAnswerId, $questionCorrectAnswersArray, true)) {
+                    $isCorrect = false;
+                    break;
                 }
             }
 
             // save user quiz results
-            // if user selected all correct answers and has no any extra answers, then question is correct
-            $this->createUserQuizResult(
-                $userQuiz,
-                $question,
-                count($answerIds) === count($questionCorrectAnswers)
-                && $userCorrectAnswerCount === count($questionCorrectAnswers)
-            );
+            $this->createUserQuizResult($userQuiz, $question, $isCorrect);
         }
         if ($needToFlush) {
             $userQuiz->setStatus(UserQuizStatus::FINISHED);

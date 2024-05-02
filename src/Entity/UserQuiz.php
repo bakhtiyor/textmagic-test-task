@@ -6,6 +6,7 @@ use App\Enum\UserQuizStatus;
 use App\Repository\UserQuizRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -151,5 +152,24 @@ class UserQuiz
         }
 
         return $this;
+    }
+
+    public function correctQuestions(): Collection
+    {
+        $criteria = (new Criteria())->andWhere(Criteria::expr()->eq('correct', true));
+        return $this->results->matching($criteria);
+    }
+
+    public function incorrectQuestions(): Collection
+    {
+        $criteria = (new Criteria())->andWhere(Criteria::expr()->eq('correct', false));
+        return $this->results->matching($criteria);
+    }
+
+    public function unansweredQuestions(): Collection
+    {
+        $allQuestions = $this->quiz->getQuestions();
+        $answeredQuestions = $this->results->map(fn(UserQuizResult $result) => $result->getQuestion());
+        return $allQuestions->filter(fn(Question $question) => !$answeredQuestions->contains($question));
     }
 }
