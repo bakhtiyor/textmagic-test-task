@@ -9,9 +9,35 @@
     findUnusedCode="true"
 >
     <projectFiles>
-        <directory name="src"/>
+        <directory name="src" useStrictTypes="true"/>
         <ignoreFiles>
             <directory name="vendor"/>
+            <directory name="src/DataFixtures"/>
         </ignoreFiles>
     </projectFiles>
-<plugins><pluginClass class="Weirdan\DoctrinePsalmPlugin\Plugin"/></plugins></psalm>
+
+    <issueHandlers>
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="src/Controller"/>
+                <directory name="src/Twig"/>
+            </errorLevel>
+        </UnusedClass>
+
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="src/Entity"/>
+                <directory name="src/Repository"/>
+            </errorLevel>
+            <errorLevel type="suppress">
+                <referencedMethod name="*::__construct"/>
+            </errorLevel>
+        </PossiblyUnusedMethod>
+
+        <PossiblyUnusedParam>
+            <errorLevel type="suppress">
+                <directory name="src/Repository"/>
+            </errorLevel>
+        </PossiblyUnusedParam>
+    </issueHandlers>
+</psalm>
