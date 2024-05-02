@@ -40,9 +40,16 @@ class UserQuiz
     #[ORM\OneToMany(targetEntity: UserQuizAnswer::class, mappedBy: 'userQuiz', orphanRemoval: true)]
     private Collection $answers;
 
+    /**
+     * @var Collection<int, UserQuizResult>
+     */
+    #[ORM\OneToMany(targetEntity: UserQuizResult::class, mappedBy: 'userQuiz', orphanRemoval: true)]
+    private Collection $results;
+
     public function __construct()
     {
         $this->answers = new ArrayCollection();
+        $this->results = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -110,6 +117,36 @@ class UserQuiz
             // set the owning side to null (unless already changed)
             if ($answer->getUserQuiz() === $this) {
                 $answer->setUserQuiz(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserQuizResult>
+     */
+    public function getResults(): Collection
+    {
+        return $this->results;
+    }
+
+    public function addResult(UserQuizResult $result): static
+    {
+        if (!$this->results->contains($result)) {
+            $this->results->add($result);
+            $result->setUserQuiz($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResult(UserQuizResult $result): static
+    {
+        if ($this->results->removeElement($result)) {
+            // set the owning side to null (unless already changed)
+            if ($result->getUserQuiz() === $this) {
+                $result->setUserQuiz(null);
             }
         }
 

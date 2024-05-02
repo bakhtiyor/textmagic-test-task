@@ -6,19 +6,18 @@
     <div class="container">
         <h2 class="my-4">{{ userQuiz.quiz.title }}</h2>
         <p>Answer to the quiz's questions. Note, that the question can have one or multiple correct answers. Once finished answering all the questions, click on Submit button to check the quiz result.</p>
-        <form method="post">
-            <input type="hidden" value="{{ userQuiz.id }}">
+        <form action="{{ path('submit-quiz', {'userQuiz': userQuiz.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to submit the quiz?');">
             {% set shuffledQuestions = quizWithQuestions.questions.values|shuffle %}
             {% for question in shuffledQuestions %}
-                <div class="card mb-4">
+                <div class="card mb-4 question">
                     <div class="card-header">
-                        <h3>{{ question.title }}</h3>
+                        <h3 class="question-title">{{ question.title }}</h3>
                     </div>
                     <div class="card-body">
                         {% set shuffledAnswers = question.answers.values|shuffle %}
                         {% for answer in shuffledAnswers %}
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="answers[{{ question.id }}][]" value="{{ answer.id }}" id="answer_{{ answer.id }}">
+                                <input class="form-check-input answer-checkbox" type="checkbox" name="answers[{{ question.id }}][]" value="{{ answer.id }}" id="answer_{{ answer.id }}">
                                 <label class="form-check-label" for="answer_{{ answer.id }}">
                                     {{ answer.title }}
                                 </label>
@@ -30,4 +29,18 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            let questions = document.querySelectorAll('.question');
+            for (let i = 0; i < questions.length; i++) {
+                let checkboxes = questions[i].querySelectorAll('.answer-checkbox');
+                let checked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                if (!checked) {
+                    e.preventDefault();
+                    alert('Please answer all questions before submitting the quiz. First unanswered question: ' + questions[i].querySelectorAll('.card-header .question-title')[0].innerHTML);
+                    return;
+                }
+            }
+        });
+    </script>
 {% endblock %}

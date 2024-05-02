@@ -29,6 +29,7 @@ class QuizRepository extends ServiceEntityRepository
             ->select('quiz', 'question', 'answer')
             ->andWhere('quiz = :quiz')
             ->setParameter('quiz', $getQuiz)
+            ->setMaxResults(10)
             ->getQuery()
             ->getOneOrNullResult();
     }

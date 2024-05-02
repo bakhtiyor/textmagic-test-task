@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\UserQuizAnswerRepository;
+use App\Repository\UserQuizResultRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity(repositoryClass: UserQuizAnswerRepository::class)]
-class UserQuizAnswer
+#[ORM\Entity(repositoryClass: UserQuizResultRepository::class)]
+class UserQuizResult
 {
     use TimestampableEntity;
 
@@ -20,7 +20,7 @@ class UserQuizAnswer
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\ManyToOne(inversedBy: 'answers')]
+    #[ORM\ManyToOne(inversedBy: 'results')]
     #[ORM\JoinColumn(nullable: false)]
     private UserQuiz $userQuiz;
 
@@ -28,9 +28,8 @@ class UserQuizAnswer
     #[ORM\JoinColumn(nullable: false)]
     private Question $question;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private Answer $answer;
+    #[ORM\Column]
+    private bool $correct;
 
     public function getId(): Uuid
     {
@@ -61,14 +60,14 @@ class UserQuizAnswer
         return $this;
     }
 
-    public function getAnswer(): Answer
+    public function isCorrect(): bool
     {
-        return $this->answer;
+        return $this->correct;
     }
 
-    public function setAnswer(Answer $answer): static
+    public function setCorrect(bool $correct): static
     {
-        $this->answer = $answer;
+        $this->correct = $correct;
 
         return $this;
     }

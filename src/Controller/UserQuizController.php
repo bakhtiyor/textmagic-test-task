@@ -4,10 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Quiz;
 use App\Entity\User;
+use App\Entity\UserQuiz;
 use App\Repository\QuizRepository;
 use App\Repository\UserQuizRepository;
 use App\Service\CreateOrReturnQueuedUserQuizService;
+use App\Service\SaveUserAnswersService;
+use Doctrine\ORM\Exception\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -48,5 +52,20 @@ class UserQuizController extends AbstractController
                 'userQuiz' => $userQuiz,
                 'quizWithQuestions' => $quizWithQuestions
         ]);
+    }
+
+    /**
+     * @throws ORMException
+     */
+    #[Route('/submit-quiz/{userQuiz}', name: 'submit-quiz', methods: ['POST'])]
+    public function submitQuiz(
+        UserQuiz $userQuiz,
+        Request $request,
+        SaveUserAnswersService $saveUserAnswersService
+    ): Response {
+        $answers = $request->request->all('answers');
+        $saveUserAnswersService->execute($userQuiz, $answers);
+
+        return $this->redirectToRoute('user-quiz-index');
     }
 }
