@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Quizzes!{% endblock %}
+
+{% block body %}
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary">Take a quiz</button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            {% for quiz in quizzes %}
+                <li><a class="dropdown-item" href="{{ path('user-quiz-create', {quiz: quiz.id }) }}"> {{ quiz.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <h1>List of user quizzes</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">ID</th>
+            <th scope="col">Quiz</th>
+            <th scope="col">Status</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Updated At</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for userQuiz in userQuizzes %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ userQuiz.id }}</td>
+                <td>{{ userQuiz.quiz.title }}</td>
+                <td>{{ userQuiz.status.value }}</td>
+                <td>{{ userQuiz.createdAt | date('d.m.Y H:i:s') }}</td>
+                <td>{{ userQuiz.updatedAt | date('d.m.Y H:i:s') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
