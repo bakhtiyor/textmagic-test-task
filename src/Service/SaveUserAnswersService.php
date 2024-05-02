@@ -47,10 +47,10 @@ class SaveUserAnswersService
             }
             // check user answers with correct answers from db
             $questionCorrectAnswers = $this->answerRepository->getQuestionCorrectAnswers($question);
-            $questionCorrectAnswersArray = array_map(static function($questionCorrectAnswer) {
+            $questionCorrectAnswersArray = array_map(static function ($questionCorrectAnswer) {
                 return $questionCorrectAnswer->getId()->toRfc4122();
             }, $questionCorrectAnswers);
-            
+
             $isCorrect = true;
             foreach ($userAnswerIds as $userAnswerId) {
                 if (!in_array($userAnswerId, $questionCorrectAnswersArray, true)) {

@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class UserQuizController extends AbstractController
 {
-    private CONST LIMIT = 30;
+    private const LIMIT = 30;
     public function __construct(
         private readonly QuizRepository $quizRepository,
         private readonly UserQuizRepository $userQuizRepository
@@ -48,10 +48,12 @@ class UserQuizController extends AbstractController
         $userQuiz = $createOrReturnQueuedUserQuizService->execute($quiz, $user);
         $quizWithQuestions = $this->quizRepository->getQuizQuestionsAndAnswerOptions($userQuiz->getQuiz());
         return $this->render(
-            'user-quiz/take.html.twig', [
+            'user-quiz/take.html.twig',
+            [
                 'userQuiz' => $userQuiz,
                 'quizWithQuestions' => $quizWithQuestions
-        ]);
+            ]
+        );
     }
 
     /**

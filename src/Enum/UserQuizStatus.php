@@ -17,5 +17,4 @@ enum UserQuizStatus: string
 
         return $values;
     }
-
 }
