@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ userQuiz.quiz.title }} | Answer to the questions {% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h2 class="my-4">{{ userQuiz.quiz.title }}</h2>
+        <p>Answer to the quiz's questions. Note, that the question can have one or multiple correct answers. Once finished answering all the questions, click on Submit button to check the quiz result.</p>
+        <form method="post">
+            <input type="hidden" value="{{ userQuiz.id }}">
+            {% set shuffledQuestions = quizWithQuestions.questions.values|shuffle %}
+            {% for question in shuffledQuestions %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3>{{ question.title }}</h3>
+                    </div>
+                    <div class="card-body">
+                        {% set shuffledAnswers = question.answers.values|shuffle %}
+                        {% for answer in shuffledAnswers %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="answers[{{ question.id }}][]" value="{{ answer.id }}" id="answer_{{ answer.id }}">
+                                <label class="form-check-label" for="answer_{{ answer.id }}">
+                                    {{ answer.title }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}

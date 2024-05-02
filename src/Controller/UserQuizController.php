@@ -6,6 +6,7 @@ use App\Entity\Quiz;
 use App\Entity\User;
 use App\Repository\QuizRepository;
 use App\Repository\UserQuizRepository;
+use App\Service\CreateOrReturnQueuedUserQuizService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,9 +34,19 @@ class UserQuizController extends AbstractController
         ]);
     }
 
-    #[Route('/user-quiz/{quiz}/create', name: 'user-quiz-create')]
-    public function createUserQuiz(Quiz $quiz): Response
-    {
-        return $this->render('user-quiz/index.html.twig');
+    #[Route('/take/quiz/{quiz}', name: 'take-quiz')]
+    public function takeQuiz(
+        Quiz $quiz,
+        CreateOrReturnQueuedUserQuizService $createOrReturnQueuedUserQuizService
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+        $userQuiz = $createOrReturnQueuedUserQuizService->execute($quiz, $user);
+        $quizWithQuestions = $this->quizRepository->getQuizQuestionsAndAnswerOptions($userQuiz->getQuiz());
+        return $this->render(
+            'user-quiz/take.html.twig', [
+                'userQuiz' => $userQuiz,
+                'quizWithQuestions' => $quizWithQuestions
+        ]);
     }
 }

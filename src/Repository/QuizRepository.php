@@ -20,4 +20,16 @@ class QuizRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Quiz::class);
     }
+
+    public function getQuizQuestionsAndAnswerOptions(Quiz $getQuiz): Quiz
+    {
+        return $this->createQueryBuilder('quiz')
+            ->innerJoin('quiz.questions', 'question')
+            ->innerJoin('question.answers', 'answer')
+            ->select('quiz', 'question', 'answer')
+            ->andWhere('quiz = :quiz')
+            ->setParameter('quiz', $getQuiz)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

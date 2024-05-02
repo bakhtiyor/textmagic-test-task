@@ -10,7 +10,7 @@
         </button>
         <ul class="dropdown-menu">
             {% for quiz in quizzes %}
-                <li><a class="dropdown-item" href="{{ path('user-quiz-create', {quiz: quiz.id }) }}"> {{ quiz.title }}</a></li>
+                <li><a class="dropdown-item" href="{{ path('take-quiz', {quiz: quiz.id }) }}"> {{ quiz.title }}</a></li>
             {% endfor %}
         </ul>
     </div>
