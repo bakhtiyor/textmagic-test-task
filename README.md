@@ -45,8 +45,13 @@ To deploy the Project, follow these steps:
     ```bash
     DATABASE_URL="postgresql://test_user:linux1@db/postgres?serverVersion=16&charset=utf8"
     ```
-   
-8. Access the application via: `http://localhost` in your web browser.
+
+8. Run following data fixture in order to fill up the tables with some data (Note: that after running this command all the data in the database will be lost):
+    ```bash
+    php bin/console doctrine:fixtures:load
+    ```
+      
+9. Access the application via: `http://localhost` in your web browser.
 
 ## Contact
 
