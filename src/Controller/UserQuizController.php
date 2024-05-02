@@ -24,7 +24,7 @@ class UserQuizController extends AbstractController
     ) {
     }
 
-    #[Route('/user-quiz', name: 'user-quiz-index')]
+    #[Route('/', name: 'user-quiz-index')]
     public function index(): Response
     {
         /** @var User $user */

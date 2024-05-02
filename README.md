@@ -12,46 +12,41 @@ To deploy the Project, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/bakhtiyor/textmagic-test-task
     ```
 
 2. Navigate to the project directory:
     ```bash
-    cd <project_directory>
-    ```
-   
-3. Build the Docker image (just for the first time):
-    ```bash
-    docker-compose up --build
+    cd textmagic-test-task
     ```
 
-4. Start the Docker container as a daemon:
+3. Start the Docker container as a daemon (it would take a bit of time if you're running it for the first time):
     ```bash
     docker-compose up -d
     ```
 
-5. Create the database schema:
+4. Create the database schema:
     ```bash
     docker-compose exec php-fpm bash
     php bin/console doctrine:schema:create
     ```   
 
-6. Create a copy of .env.local file:
+5. Create a copy of .env.local file:
     ```bash
     cp .env .env.local
     ```
 
-7. Specify the database connection in the .env.local file:
+6. Specify the database connection in the .env.local file:
     ```bash
     DATABASE_URL="postgresql://test_user:linux1@db/postgres?serverVersion=16&charset=utf8"
     ```
 
-8. Run following data fixture in order to fill up the tables with some data (Note: that after running this command all the data in the database will be lost):
+7. Run following data fixture in order to fill up the tables with some data (Note: that after running this command all the data in the database will be lost):
     ```bash
     php bin/console doctrine:fixtures:load
     ```
       
-9. Access the application via: `http://localhost` in your web browser.
+8. Access the application via: `http://localhost` in your web browser.
 
 ## Contact
 
