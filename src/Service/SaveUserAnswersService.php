@@ -8,11 +8,11 @@ use App\Entity\UserQuiz;
 use App\Entity\UserQuizAnswer;
 use App\Entity\UserQuizResult;
 use App\Enum\UserQuizStatus;
+use App\Exception\UserQuizException;
 use App\Repository\AnswerRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
-use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 
 class SaveUserAnswersService
@@ -25,35 +25,29 @@ class SaveUserAnswersService
 
     /**
      * @throws ORMException
+     * @throws UserQuizException
      */
     public function execute(UserQuiz $userQuiz, array $userAnswers): void
     {
-        if (!in_array($userQuiz->getStatus(), [UserQuizStatus::QUEUED, UserQuizStatus::STARTED], true)) {
-            throw new RuntimeException('User quiz is not in progress');
+        if (!UserQuizStatus::validToBeTaken($userQuiz->getStatus())) {
+            throw new UserQuizException('User quiz is not started or queued yet');
         }
         $needToFlush = count($userAnswers) > 0;
         foreach ($userAnswers as $userAnswerQuestionId => $userAnswerIds) {
             $question = $this->entityManager->getReference(Question::class, new Uuid($userAnswerQuestionId));
-            if ($question === null) {
-                throw new RuntimeException('Question not found');
+            if (!$question) {
+                throw new UserQuizException('Question not found');
             }
             // save user answers
             foreach ($userAnswerIds as $userAnswerId) {
-                $answer = $this->entityManager->getReference(Answer::class, new Uuid($userAnswerId));
-                if ($answer === null) {
-                    throw new RuntimeException('Answer not found');
-                }
-                $this->createUserQuizAnswer($userQuiz, $question, $answer);
+                $this->createUserQuizAnswer($userQuiz, $question, $userAnswerId);
             }
-            // check user answers with correct answers from db
-            $questionCorrectAnswers = $this->answerRepository->getQuestionCorrectAnswers($question);
-            $questionCorrectAnswersArray = array_map(static function ($questionCorrectAnswer) {
-                return $questionCorrectAnswer->getId()->toRfc4122();
-            }, $questionCorrectAnswers);
 
+            // check user answers with correct answers from db
+            $questionCorrectAnswerIds = $this->answerRepository->getQuestionCorrectAnswerIds($question);
             $isCorrect = true;
             foreach ($userAnswerIds as $userAnswerId) {
-                if (!in_array($userAnswerId, $questionCorrectAnswersArray, true)) {
+                if (!in_array($userAnswerId, $questionCorrectAnswerIds, true)) {
                     $isCorrect = false;
                     break;
                 }
@@ -68,8 +62,17 @@ class SaveUserAnswersService
         }
     }
 
-    private function createUserQuizAnswer(UserQuiz $userQuiz, Question $question, Answer $answer): void
+    /**
+     * @throws ORMException
+     * @throws UserQuizException
+     */
+    private function createUserQuizAnswer(UserQuiz $userQuiz, Question $question, string $userAnswerId): void
     {
+        $answer = $this->entityManager->getReference(Answer::class, new Uuid($userAnswerId));
+        if ($answer === null) {
+            throw new UserQuizException('Answer not found');
+        }
+
         $userQuizAnswer = new UserQuizAnswer();
         $userQuizAnswer->setUserQuiz($userQuiz)
             ->setQuestion($question)

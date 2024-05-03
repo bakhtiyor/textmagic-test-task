@@ -24,16 +24,22 @@ class AnswerRepository extends ServiceEntityRepository
 
     /**
      * Get all answers for a question.
-     * @return Answer[]
+     * @param Question $question
+     * @return array
      */
-    public function getQuestionCorrectAnswers(Question $question): array
+    public function getQuestionCorrectAnswerIds(Question $question): array
     {
-        return $this->createQueryBuilder('answer')
+        $answerIds = $this->createQueryBuilder('answer')
+            ->select('answer.id')
             ->innerJoin('answer.question', 'question')
             ->andWhere('question = :question')
             ->setParameter('question', $question)
             ->andWhere('answer.correct = true')
             ->getQuery()
             ->getResult();
+
+        return array_map(static function (array $answerArray) {
+            return $answerArray['id']->toRfc4122();
+        }, $answerIds);
     }
 }

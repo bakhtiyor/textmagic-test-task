@@ -30,6 +30,7 @@ class UserQuizController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $quizzes = $this->quizRepository->findAll();
+        // @TODO: Implement pagination
         $userQuizzes = $this->userQuizRepository->getUserQuizzes($user, self::LIMIT);
 
         return $this->render('user-quiz/index.html.twig', [

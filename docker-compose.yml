@@ -34,7 +34,7 @@ services:
     environment:
       POSTGRES_USER: test_user
       POSTGRES_PASSWORD: linux1
-      POSTGRES_DB: testdb
+      POSTGRES_DB: postgres
       POSTGRES_ROOT_PASSWORD: linux1
     ports:
       - "5432:5432"

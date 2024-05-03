@@ -36,7 +36,7 @@ To deploy the Project, follow these steps:
 
 6. Create a database schema
    ```bash
-    php bin/console doctrine:schema:update
+    php bin/console doctrine:schema:update --force
     ```
    
 7. Run following data fixture in order to fill up the tables with some data (Be careful: that after running this command all the data in the database will be lost):
@@ -44,7 +44,7 @@ To deploy the Project, follow these steps:
     php bin/console doctrine:fixtures:load --no-interaction
     ```
       
-8. Access the application via: `http://localhost` in your web browser.
+8. Access the application via: [http://localhost](http://localhost) in your web browser.
 
 9. You will be asked to login. Use the following credentials or register a new user:
     - Username: `i@bakhtiyor.tj`
